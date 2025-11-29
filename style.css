@@ -22,16 +22,36 @@
   gap: 5px;
 }
 
-#time {
+#timeButton {
+    color: rgb(187, 187, 187);
+    font-size: 2.5rem;
+    font-family: 'Archivo Black', sans-serif; 
+    letter-spacing: rem;
+    font-weight: 100;
+    background-color: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    margin-bottom: -10px;
+
+    /* Hover transitions */
+    transition: all 0.3s ease;
+}
+
+#timeButton:hover {
+    border: 2px solid rgb(187, 187, 187);
+}
+
+#studyTime {
     font-size: 9rem;
-    font-family: 'Inter', sans-serif; /* Font: Roboto Mono */
+    font-family: 'Inter', sans-serif; 
     font-weight: 700;  /* Bold */
 }
 
-#pause {
+#pauseButton {
     color: white;
     font-size: 1.25rem;
-    font-family: 'Inter', sans-serif; /* Font: Roboto Mono */
+    font-family: 'Inter', sans-serif;
     font-weight: 700;  /* Bold */
     background-color: black;
     border: 2px solid white;
@@ -42,7 +62,7 @@
     transition: all 0.3s ease;
 }
 
-#pause:hover {
+#pauseButton:hover {
     color: black;
     background-color: white;
     border: 2px solid black;
