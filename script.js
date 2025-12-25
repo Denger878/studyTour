@@ -8,7 +8,9 @@ canvas.height = window.innerHeight;
 const landscapes = [
   'landscapes/lofoten_islands.jpg',
   'landscapes/benagil_cave.jpg',
-  'landscapes/yellowstone.jpg'
+  'landscapes/yellowstone.jpg',
+  'landscapes/great_wall_of_china.jpg',
+  'landscapes/ben_gioc.jpg'
 ];
 
 const randomLandscape = landscapes[Math.floor(Math.random() * landscapes.length)];
@@ -26,8 +28,8 @@ landscapeImage.onerror = function() {
 };
 
 /* ==================== CONSTANTS ==================== */
-const timeButton = document.getElementById('timeButton')
-const pauseButton = document.getElementById('pauseButton')
+const timeButton = document.getElementById('timeButton');
+const pauseButton = document.getElementById('pauseButton');
 const inputBox = document.querySelector('.input');
 const titleStudyTime = document.getElementById('titleStudyTime');
 const plus30 = document.getElementById('plus30');
@@ -170,7 +172,7 @@ function startCountdown() {
             clockStudyTime.textContent = secondsToTime(remainingSeconds);
         
         
-    }, 1000);
+    }, 10);
 }
 
 updateClock();
