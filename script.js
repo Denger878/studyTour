@@ -2,8 +2,8 @@
 const canvas = document.getElementById('landscapesCanvas');
 const ctx = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = Math.min(window.innerWidth, 1920);
+canvas.height = Math.min(window.innerHeight, 1080);
 
 const landscapes = [
   'landscapes/lofoten_islands.jpg',
@@ -167,22 +167,41 @@ function startCountdown() {
     if (countdownInterval) {
         clearInterval(countdownInterval);
     }
+    
+    let lastUpdateTime = Date.now();
     countdownInterval = setInterval(function() {
-        remainingSeconds --;
-        const blockSize = calculateBlockSize();
-        drawPixelated(blockSize);
+        const now = Date.now();
+        const deltaTime = now - lastUpdateTime;
+        lastUpdateTime = now;
+        
+        // Only decrement if close to 1 second has passed
+        if (deltaTime >= 900) { // 900ms threshold accounts for small delays
+            remainingSeconds--;
+        }
+        
+        // Update clock display every tick
         if (remainingSeconds <= 0) {
             clearInterval(countdownInterval);
             clockStudyTime.textContent = '';
             timeButton.style.display = 'none';
             pauseButton.style.display = 'none';
+            // Final reveal here (Section 4)
         } else if (remainingSeconds <= 60) {
             clockStudyTime.textContent = remainingSeconds;
-        } else
+        } else {
             clockStudyTime.textContent = secondsToTime(remainingSeconds);
+        }
         
+        // Update pixels only when stage changes (not every second!)
+        const newStage = calculateStage();
+        if (newStage !== lastStage) {
+            lastStage = newStage;
+            const blockSize = calculateBlockSize();
+            drawPixelated(blockSize);
+            console.log(`Stage ${newStage}: ${blockSize}px blocks`);
+        }
         
-    }, 10);
+    }, 1000);
 }
 
 updateClock();
@@ -222,29 +241,33 @@ function getAverageColor(startX, startY, blockWidth, blockHeight) {
  return `rgb(${Math.floor(r/count)}, ${Math.floor(g/count)}, ${Math.floor(b/count)})`;
 }
 
-// Calculate what block size should be based on progress
+// Calculate what block size should be based on current stage
 function calculateBlockSize() {
+  const stage = calculateStage();
+  const numberOfStages = 16; // Must match the number in calculateStage()
+  
+  const maxBlockSize = 256;
+  const minBlockSize = 8;
+  
+  // Create exponential curve for satisfying "splitting" feel
+  const stageProgress = stage / (numberOfStages - 1); // 0 to 1
+  const easedProgress = Math.pow(stageProgress, 1.4); // Slight ease
+  
+  const blockSize = maxBlockSize * Math.pow(minBlockSize / maxBlockSize, easedProgress);
+  
+  return Math.round(blockSize);
+}
+
+// Calculate which discrete stage we're in (0 to numberOfStages-1)
+function calculateStage() {
   const totalSeconds = inputValue * 60;
-  if (totalSeconds === 0) return startBlockSize;
-
-  const elapsed = totalSeconds - remainingSeconds;
-  const progress = elapsed / totalSeconds;
-
-  // Which discrete stage are we in?
-  const stage = Math.min(
-    pixelStages - 1,
-    Math.floor(progress * pixelStages)
-  );
-
-  // Exponential decay so it feels like consistent splitting
-  const ratio = Math.pow(
-    endBlockSize / startBlockSize,
-    1 / (pixelStages - 1)
-  );
-
-  const blockSize = startBlockSize * Math.pow(ratio, stage);
-
-  return Math.max(endBlockSize, Math.round(blockSize));
+  if (totalSeconds === 0) return 0;
+  
+  const progress = (totalSeconds - remainingSeconds) / totalSeconds; // 0 to 1
+  const numberOfStages = 16; // Image will change 12 times total
+  
+  const stage = Math.floor(progress * numberOfStages);
+  return Math.min(stage, numberOfStages - 1);
 }
 
 /* ==================== INITIALIZATION ==================== */
